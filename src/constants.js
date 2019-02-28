@@ -5,3 +5,5 @@ export const IMAGE = [
   "https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/960w/0XRFUE80AZ.jpg",
   "https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/960w/2DQJJ9RLVD.jpg"
 ];
+
+export const TIME_DURATION = 5000;

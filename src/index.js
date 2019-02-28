@@ -1,34 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
-import { IMAGE } from "./constants";
+import { IMAGE, TIME_DURATION } from "./constants";
 import ReactCSSTransitionGroup from "react-addons-css-transition-group";
-
 import "./styles.scss";
 
 function App() {
-  const [imageArray] = useState(IMAGE);
-  const [index, setIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isNext, setIsNext] = useState(true);
 
-  const src = imageArray[index];
-  const len = imageArray.length;
+  const src = IMAGE[currentIndex];
+  const len = IMAGE.length;
+
+  useEffect(() => {
+    const timer = setTimeout(() =>
+      setCurrentIndex(prevIndex => (prevIndex + 1 + len) % len)
+    , TIME_DURATION);
+    return () => clearTimeout(timer);
+  }, [currentIndex])
 
   function handlerPrev(e) {
     e.preventDefault();
     setIsNext(false);
-    setIndex(prevIndex => (prevIndex - 1 + len) % len);
+    setCurrentIndex(prevIndex => (prevIndex - 1 + len) % len);
   }
 
   function handlerNext(e) {
     e.preventDefault();
     setIsNext(true);
-    setIndex(prevIndex => (prevIndex + 1) % len);
+    setCurrentIndex(prevIndex => (prevIndex + 1) % len);
   }
 
   function changeSlide(id) {
     return function(e) {
       e.preventDefault();
-      setIndex(id);
+      setCurrentIndex(id);
     }
   }
 
@@ -42,21 +47,23 @@ function App() {
             leave: "leave",
             leaveActive: isNext ? "leave-active-next" : "leave-active-prev"
           }}
+          transitionEnterTimeout={500}
+          transitionLeaveTimeout={500}
         >
-          <div className="carousel_slide" key={index}>
+          <div className="carousel_slide" key={currentIndex}>
             <img src={src} alt="carousel slide" />
           </div>
         </ReactCSSTransitionGroup>
-        <div className="carousel_control carousel_control__prev" onClick={handlerPrev}>
-          <span />
+        <div className="carousel_control carousel_control__prev">
+          <span onClick={handlerPrev} />
         </div>
-        <div className="carousel_control carousel_control__next" onClick={handlerNext}>
-          <span />
+        <div className="carousel_control carousel_control__next">
+          <span onClick={handlerNext} />
         </div>
         <div className="carousel_history">
           <ul>
-            {imageArray.map((item, id) => {
-              const name = (index === id && "active") || "";
+            {IMAGE.map((item, id) => {
+              const name = (currentIndex === id && "active") || "";
               return (
                 <li key={id} onClick={changeSlide(id)}>
                   <button className={name} />
